@@ -2,6 +2,18 @@ import socket
 import json
 import time
 import random
+import psutil
+
+def get_color_from_cpu_usage(cpu_usage):
+    """
+    Returns (r, g, b) tuple where:
+    - 0% CPU => green (0,255,0)
+    - 100% CPU => red (255,0,0)
+    """
+    r = int((cpu_usage / 100.0) * 255)
+    g = 255 - r
+    b = 0
+    return r, g, b
 
 
 def toggleState(target_ip):
@@ -93,17 +105,35 @@ while True:
         # print(data["msg"]["data"]["device"]) #print(data["data"]["ip"])
         break
     
+# try:
+#     toggleState(LIGHT_IP)
+#     time.sleep(2)
+#     changeColor(LIGHT_IP, random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+#     for i in range(10):
+#         time.sleep(.5)
+#         changeColor(LIGHT_IP, random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+#     time.sleep(2)
+#     toggleState(LIGHT_IP)
+# except Exception as e:
+#     print(e)
+    
 try:
     toggleState(LIGHT_IP)
-    time.sleep(2)
-    changeColor(LIGHT_IP, random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-    for i in range(10):
-        time.sleep(.5)
-        changeColor(LIGHT_IP, random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-    time.sleep(2)
+    time.sleep(1)
+
+    while True:
+        cpu_usage = psutil.cpu_percent(interval=1)
+        print(f"CPU Usage: {cpu_usage}%")
+        r, g, b = get_color_from_cpu_usage(cpu_usage)
+        changeColor(LIGHT_IP, r, g, b)
+        time.sleep(1)
+
+except KeyboardInterrupt:
+    print("Exiting...")
     toggleState(LIGHT_IP)
 except Exception as e:
     print(e)
+
 
 
 
