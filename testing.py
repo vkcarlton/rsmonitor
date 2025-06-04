@@ -122,7 +122,7 @@ try:
     time.sleep(1)
 
     while True:
-        cpu_usage = psutil.cpu_percent(interval=1)
+        cpu_usage = psutil.cpu_percent()
         print(f"CPU Usage: {cpu_usage}%")
         r, g, b = get_color_from_cpu_usage(cpu_usage)
         changeColor(LIGHT_IP, r, g, b)
