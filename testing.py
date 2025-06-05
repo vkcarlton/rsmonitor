@@ -61,14 +61,18 @@ def listen(listen_port):
     listen_sock.close()
     return data
 
-def changeColor(target_ip, r, g, b):
+def changeColor(target_ip, r, g, b, brightness = 10):
+    brightnessMessage = f'''{{"msg":{{"cmd":"brightness","data":{{"brightness":{brightness}}}}}}}'''
+    brightnessMessage = bytes(brightnessMessage, "utf-8")
+    
     colorMessage = f'''{{"msg":{{"cmd":"colorwc","data":{{"color":{{"r":{r},"g":{g},"b":{b}}}}}}}}}'''
     print(colorMessage)
     colorMessage = bytes(colorMessage, "utf-8")
-    color_sock = socket.socket(socket.AF_INET, # Internet
+    control_sock = socket.socket(socket.AF_INET, # Internet
                         socket.SOCK_DGRAM) # UDP
-    color_sock.sendto(colorMessage, (target_ip, COMMAND_PORT))
-    color_sock.close()
+    control_sock.sendto(brightnessMessage, (target_ip, COMMAND_PORT))
+    control_sock.sendto(colorMessage, (target_ip, COMMAND_PORT))
+    control_sock.close()
     
     
 MULTICAST_IP = "239.255.255.250"
